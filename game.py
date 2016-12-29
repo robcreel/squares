@@ -5,8 +5,8 @@ import config
 # cols = config.COLS
 rows = 3
 cols = 3
-tiles = ["a", "b", "c", "d", "  ", "e", "f", "g", "h"]
-blank_position = tiles.index("  ") + 1
+# tiles = ["a", "b", "c", "d", "  ", "e", "f", "g", "h"]
+
 
 
 class Game(object):
@@ -20,11 +20,14 @@ class Game(object):
     # right is valid if blank is not in the rightmost column, namely
     #   blank.location % cols != 0
 
-    def is_blank_in_top_row(self, blank_position, tiles):
+    def get_blank_position(self, tiles):
+        return tiles.index("  ") + 1
+
+    def is_blank_in_top_row(self, blank_position, boardlength):
         # print(len(tiles))
         # print(blank_position)
         # print(cols)
-        return len(tiles) - blank_position >= cols
+        return blank_position <= cols
 
     def is_blank_in_bottom_row(self, blank_position):
         return rows*cols - blank_position < cols
@@ -42,7 +45,7 @@ class Game(object):
 
         blank_position = tiles.index("  ") + 1
         if move == "down":
-            return not(self.is_blank_in_top_row(blank_position, tiles))
+            return not(self.is_blank_in_top_row(blank_position, len(tiles)))
         elif move == "up":
             return not(self.is_blank_in_bottom_row(blank_position))
         elif move == "left":
@@ -65,21 +68,21 @@ class Game(object):
     #         elif move = right:
     #
     #
-    def getBlankNeighborNorth(self, blank_position):
-        return tiles[blank_position - cols - 1]
+    def get_blank_neighbor_north(self, tiles):
+        return tiles[self.get_blank_position(tiles) - cols - 1]
 
-    def getBlankNeighborSouth(self, blank_position):
-        return tiles[blank_position + cols]
+    def get_blank_neighbor_south(self, tiles):
+        return tiles[self.get_blank_position(tiles) + cols - 1]
 
-    def getBlankNeighborEast(self, blank_position):
-        return tiles[blank_position]
+    def get_blank_neighbor_east(self, tiles):
+        return tiles[self.get_blank_position(tiles)]
 
-    def getBlankNeighborWest(self, blank_position):
-        return tiles[blank_position - 2]
+    def get_blank_neighbor_west(self, tiles):
+        return tiles[self.get_blank_position(tiles) - 2]
 
-game = Game()
-print("blank_position: {0}".format(blank_position))
-print("North: {0}".format(game.getBlankNeighborNorth(blank_position)))
-print("South: {0}".format(game.getBlankNeighborSouth(blank_position)))
-print("East: {0}".format(game.getBlankNeighborEast(blank_position)))
-print("West: {0}".format(game.getBlankNeighborWest(blank_position)))
+# game = Game()
+# print("blank_position: {0}".format(blank_position))
+# print("North: {0}".format(game.get_blank_neighbor_north()))
+# print("South: {0}".format(game.get_blank_neighbor_south()))
+# print("East: {0}".format(game.get_blank_neighbor_east()))
+# print("West: {0}".format(game.get_blank_neighbor_west()))

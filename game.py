@@ -1,32 +1,36 @@
-from board_presenter import BoardPresenter
-import config
+import random
 
-# rows = config.ROWS
-# cols = config.COLS
-rows = 3
-cols = 3
-# tiles = ["a", "b", "c", "d", "  ", "e", "f", "g", "h"]
-
+rows = 2
+cols = 2
 
 
 class Game(object):
-    # Goal: decide on (and implement) the logic of tile movement.
-    # isValid method:  up is valid if blank is not in last row, namely
-    #   len(tiles) - blank.location < cols
-    # down is valid if blank is not in the first row, namely
-    #   blank.location < cols
-    # left is valid if blank is not in the leftmost column, namely
-    #   blank.location % cols != 1
-    # right is valid if blank is not in the rightmost column, namely
-    #   blank.location % cols != 0
+
+    def __init__(self, board_presenter):
+        self.board_presenter = board_presenter
+
+    def play_game(self):
+        tiles = self.create_tile_list()
+        self.board_presenter.print_board(tiles, rows, cols)
+
+    # Method for determining win/game over status, 
+    # create while loop that doesn't terminate until gameover = true
+    # print board after game.
+
+    def create_tile_list(self):
+        tiles = []
+        for i in range(rows * cols):
+            if (i + 1) < 10:
+                tiles.append(" " + str(i + 1))
+            else:
+                tiles.append(str(i + 1))
+        tiles[len(tiles) - 1] = "  "
+        return tiles
 
     def get_blank_position(self, tiles):
         return tiles.index("  ") + 1
 
     def is_blank_in_top_row(self, blank_position, boardlength):
-        # print(len(tiles))
-        # print(blank_position)
-        # print(cols)
         return blank_position <= cols
 
     def is_blank_in_bottom_row(self, blank_position):
@@ -38,11 +42,8 @@ class Game(object):
     def is_blank_in_right_column(self, blank_position):
         return blank_position % cols == 0
 
-    def is_valid_move(self, move):
+    def is_valid_move(self, tiles, move):
         presenter = BoardPresenter()
-        # tiles = presenter.createTileList()
-        # tiles = ["a", "b", "c", "d", "  ", "e", "f", "g", "h"]
-
         blank_position = tiles.index("  ") + 1
         if move == "down":
             return not(self.is_blank_in_top_row(blank_position, len(tiles)))
@@ -56,18 +57,14 @@ class Game(object):
             return False
 
 
+    def swap_tiles(self, tiles, swap_target): # swap_target is a tile value
+       temp_value_target = tiles.index(swap_target)
+       temp_value_blank = tiles.index("  ")
+       tiles[temp_value_target] = "  "
+       tiles[temp_value_blank] = swap_target
+       return tiles
 
-    # def moveTile(move):
-    #     if isValidMove(move):
-    #         if move = up:
-    #             swap(blank, )
-    #         elif move = down:
-    #
-    #         elif move = left:
-    #
-    #         elif move = right:
-    #
-    #
+
     def get_blank_neighbor_north(self, tiles):
         return tiles[self.get_blank_position(tiles) - cols - 1]
 
@@ -80,9 +77,42 @@ class Game(object):
     def get_blank_neighbor_west(self, tiles):
         return tiles[self.get_blank_position(tiles) - 2]
 
-# game = Game()
-# print("blank_position: {0}".format(blank_position))
-# print("North: {0}".format(game.get_blank_neighbor_north()))
-# print("South: {0}".format(game.get_blank_neighbor_south()))
-# print("East: {0}".format(game.get_blank_neighbor_east()))
-# print("West: {0}".format(game.get_blank_neighbor_west()))
+    def make_move_right(self, tiles):
+        if self.is_valid_move(tiles, "right"):
+            self.swap_tiles(tiles, self.get_blank_neighbor_west(tiles))
+        return tiles
+
+    def make_move_left(self, tiles):
+        if self.is_valid_move(tiles, "left"):
+            self.swap_tiles(tiles, self.get_blank_neighbor_east(tiles))
+        return tiles
+
+    def make_move_up(self, tiles):
+        if self.is_valid_move(tiles, "up"):
+            self.swap_tiles(tiles, self.get_blank_neighbor_south(tiles))
+        return tiles
+
+    def make_move_down(self, tiles):
+        if self.is_valid_move(tiles, "down"):
+            self.swap_tiles(tiles, self.get_blank_neighbor_north(tiles))
+        return tiles
+
+    def make_move(self, tiles, move):
+        if move == "left":
+            return self.make_move_left(tiles)
+        elif move == "right":
+            return self.make_move_right(tiles)
+        elif move == "up":
+            return self.make_move_up(tiles)
+        else:
+            return self.make_move_down(tiles)
+
+
+    def shuffle_tiles(self, tiles):
+        moves = ["up", "down", "left", "right"]
+        for i in range(1, 4*len(tiles)):
+            index = random.randint(0, 3)
+            move = moves[index]
+            self.make_move(tiles, move)
+        print(tiles)
+        return tiles

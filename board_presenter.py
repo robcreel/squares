@@ -1,40 +1,20 @@
-import config
-
-rows = config.ROWS
-cols = config.COLS
-
 class BoardPresenter(object):
 
-    def printRow(self, tiles, first, last): # Prints row of tiles from first to last
+    def print_row(self, tiles, first, last): # Prints row of tiles from first to last
         row = "|"
         for index in range(first, last):
             row += " " + str(tiles[index - 1]) + " |"
         print(row)
 
-
-    def printRowBorder(self, first, last): # Prints row border of length last - first
-        rowBorder = ""
+    def print_row_border(self, first, last): # Prints row border of length last - first
+        row_border = ""
         for index in range(first, last):
-            rowBorder += "-----"
-        rowBorder += "-"
-        print(rowBorder)
+            row_border += "-----"
+        row_border += "-"
+        print(row_border)
 
-    def printBoard(self, nrows, ncols):
-        tiles = self.createTileList()
+    def print_board(self, tiles, nrows, ncols):
         for index in range(1, ncols * nrows + 1, ncols):
-            self.printRowBorder(index, index + ncols)
-            self.printRow(tiles, index, index + ncols)
-        self.printRowBorder(0, ncols)
-
-    def createTileList(self):
-        tiles = []
-        for i in range(rows * cols):
-            if (i + 1) < 10:
-                tiles.append(" " + str(i + 1))
-            else:
-                tiles.append(str(i + 1))
-        tiles[len(tiles) - 1] = "  "
-        return tiles
-
-presenter = BoardPresenter()
-presenter.printBoard(rows, cols)
+            self.print_row_border(index, index + ncols)
+            self.print_row(tiles, index, index + ncols)
+        self.print_row_border(0, ncols)

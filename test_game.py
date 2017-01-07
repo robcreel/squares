@@ -344,6 +344,7 @@ class TestGame(unittest.TestCase):
     self.assertEqual(blank_position, 9)
     self.assertEqual(self.game.get_blank_neighbor_west(tiles), "h")
 
+
   def test_get_blank_neighbor_west_8(self):
     tiles = ["a", "b", "c",
              "d", "e", "f",
@@ -351,3 +352,92 @@ class TestGame(unittest.TestCase):
     blank_position = tiles.index("  ") + 1
     self.assertEqual(blank_position, 8)
     self.assertEqual(self.game.get_blank_neighbor_west(tiles), "g")
+
+  def test_swap_up(self):
+    tiles = ["a", "b", "c",
+             "d", "  ", "e",
+             "f", "g", "h"]
+    target = "b"
+    self.assertEqual(self.game.swap_tiles(tiles, target),
+                     ["a", "  ", "c",
+                      "d", "b", "e",
+                      "f", "g", "h"])
+
+  def test_swap_down(self):
+    tiles = ["a", "b", "c",
+             "d", "  ", "e",
+             "f", "g", "h"]
+    target = "g"
+    self.assertEqual(self.game.swap_tiles(tiles, target),
+                     ["a", "b", "c",
+                      "d", "g", "e",
+                      "f", "  ", "h"])
+
+  def test_swap_left(self):
+    tiles = ["a", "b", "c",
+             "d", "  ", "e",
+             "f", "g", "h"]
+    target = "d"
+    self.assertEqual(self.game.swap_tiles(tiles, target),
+                     ["a", "b", "c",
+                      "  ", "d", "e",
+                      "f", "g", "h"])
+
+  def test_swap_right(self):
+    tiles = ["a", "b", "c",
+             "d", "  ", "e",
+             "f", "g", "h"]
+    target = "e"
+    self.assertEqual(self.game.swap_tiles(tiles, target),
+                     ["a", "b", "c",
+                      "d", "e", "  ",
+                      "f", "g", "h"])
+
+  def test_make_move_right(self):
+    tiles = ["a", "b", "c",
+             "d", "  ", "e",
+             "f", "g", "h"]
+    self.assertEqual(self.game.make_move_right(tiles),
+                     ["a", "b", "c",
+                      "  ", "d", "e",
+                      "f", "g", "h"])
+
+  def test_make_move_left(self):
+    tiles = ["a", "b", "c",
+             "d", "  ", "e",
+             "f", "g", "h"]
+    self.assertEqual(self.game.make_move_left(tiles),
+                     ["a", "b", "c",
+                      "d", "e", "  ",
+                      "f", "g", "h"])
+
+  def test_make_move_up(self):
+    tiles = ["a", "b", "c",
+             "d", "  ", "e",
+             "f", "g", "h"]
+    self.assertEqual(self.game.make_move_up(tiles),
+                     ["a", "b", "c",
+                      "d", "g", "e",
+                      "f", "  ", "h"])
+
+  def test_make_move_down(self):
+    tiles = ["a", "b", "c",
+             "d", "  ", "e",
+             "f", "g", "h"]
+    self.assertEqual(self.game.make_move_down(tiles),
+                     ["a", "  ", "c",
+                      "d", "b", "e",
+                      "f", "g", "h"])
+
+
+  def test_make_move(self):
+      tiles = ["a", "b", "c",
+               "d", "  ", "e",
+               "f", "g", "h"]
+      self.assertEqual(self.game.make_move(tiles, "right"),
+                       ["a", "b", "c",
+                        "  ", "d", "e",
+                        "f", "g", "h"])
+
+
+  

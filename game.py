@@ -1,25 +1,60 @@
 import random
 
-rows = 2
-cols = 2
+# rows = 4
+# cols = 4
 
 
 class Game(object):
 
-    def __init__(self, board_presenter):
+    def __init__(self, board_presenter, cli, dimensions):
         self.board_presenter = board_presenter
+        self.cli = cli
+        # self.dimensions = dimensions
+        self.rows = dimensions['rows']
+        self.cols = dimensions['cols']
 
     def play_game(self):
-        tiles = self.create_tile_list()
-        self.board_presenter.print_board(tiles, rows, cols)
 
-    # Method for determining win/game over status, 
-    # create while loop that doesn't terminate until gameover = true
-    # print board after game.
+
+        self.cli.clear_screen()
+        self.cli.display_legend()
+        tiles = self.create_tile_list()
+        self.board_presenter.print_board(tiles, self.rows, self.cols)
+        user_input = self.cli.get_input()
+        interpreted_input = self.interpret_input(user_input)
+        tiles = self.make_move(tiles, interpreted_input)
+        self.cli.clear_screen()
+        self.cli.display_legend()
+        self.board_presenter.print_board(tiles, self.rows, self.cols)
+        while (interpreted_input != "exit"):
+            user_input = self.cli.get_input()
+            interpreted_input = self.interpret_input(user_input)
+            tiles = self.make_move(tiles, interpreted_input)
+            self.cli.clear_screen()
+            self.cli.display_legend()
+            self.board_presenter.print_board(tiles, self.rows, self.cols)
+            if tiles == self.create_tile_list():
+                self.cli.display("You win!")
+
+    def interpret_input(self, user_input):
+        if user_input == "i":
+            return "up"
+        elif user_input == "j":
+            return "left"
+        elif user_input == "k":
+            return "down"
+        elif user_input == "l":
+            return "right"
+        elif user_input == "s":
+            return "shuffle"
+        elif user_input == "e":
+            return "exit"
+        else:
+            return user_input
 
     def create_tile_list(self):
         tiles = []
-        for i in range(rows * cols):
+        for i in range(self.rows * self.cols):
             if (i + 1) < 10:
                 tiles.append(" " + str(i + 1))
             else:
@@ -31,19 +66,18 @@ class Game(object):
         return tiles.index("  ") + 1
 
     def is_blank_in_top_row(self, blank_position, boardlength):
-        return blank_position <= cols
+        return blank_position <= self.cols
 
     def is_blank_in_bottom_row(self, blank_position):
-        return rows*cols - blank_position < cols
+        return self.rows * self.cols - blank_position < self.cols
 
     def is_blank_in_left_column(self, blank_position):
-        return blank_position % cols == 1
+        return blank_position % self.cols == 1
 
     def is_blank_in_right_column(self, blank_position):
-        return blank_position % cols == 0
+        return blank_position % self.cols == 0
 
     def is_valid_move(self, tiles, move):
-        presenter = BoardPresenter()
         blank_position = tiles.index("  ") + 1
         if move == "down":
             return not(self.is_blank_in_top_row(blank_position, len(tiles)))
@@ -66,10 +100,10 @@ class Game(object):
 
 
     def get_blank_neighbor_north(self, tiles):
-        return tiles[self.get_blank_position(tiles) - cols - 1]
+        return tiles[self.get_blank_position(tiles) - self.cols - 1]
 
     def get_blank_neighbor_south(self, tiles):
-        return tiles[self.get_blank_position(tiles) + cols - 1]
+        return tiles[self.get_blank_position(tiles) + self.cols - 1]
 
     def get_blank_neighbor_east(self, tiles):
         return tiles[self.get_blank_position(tiles)]
@@ -104,15 +138,20 @@ class Game(object):
             return self.make_move_right(tiles)
         elif move == "up":
             return self.make_move_up(tiles)
-        else:
+        elif move == "down":
             return self.make_move_down(tiles)
+        elif move == "shuffle":
+            return self.shuffle_tiles(tiles)
+        else:
+            return tiles
+
+
 
 
     def shuffle_tiles(self, tiles):
         moves = ["up", "down", "left", "right"]
-        for i in range(1, 4*len(tiles)):
+        for i in range(1, 50*len(tiles)):
             index = random.randint(0, 3)
             move = moves[index]
             self.make_move(tiles, move)
-        print(tiles)
         return tiles

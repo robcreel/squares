@@ -1,40 +1,49 @@
 import random
 
-# rows = 4
-# cols = 4
-
-
 class Game(object):
 
     def __init__(self, board_presenter, cli, dimensions):
         self.board_presenter = board_presenter
         self.cli = cli
-        # self.dimensions = dimensions
         self.rows = dimensions['rows']
         self.cols = dimensions['cols']
 
     def play_game(self):
-
-
-        self.cli.clear_screen()
-        self.cli.display_legend()
         tiles = self.create_tile_list()
-        self.board_presenter.print_board(tiles, self.rows, self.cols)
-        user_input = self.cli.get_input()
-        interpreted_input = self.interpret_input(user_input)
-        tiles = self.make_move(tiles, interpreted_input)
+        self.display_current_board(tiles)
+        interpreted_input = self.take_a_turn(tiles)
+        while (interpreted_input != "exit"):
+            interpreted_input = self.take_a_turn(tiles)
+            if self.is_a_won_game(tiles):
+                self.cli.display("You win!")
+
+    def create_tile_list(self):
+        tiles = []
+        for i in range(self.rows * self.cols):
+            if (i + 1) < 10:
+                tiles.append(" " + str(i + 1))
+            else:
+                tiles.append(str(i + 1))
+        tiles[len(tiles) - 1] = "  "
+        return tiles
+
+    def display_current_board(self, tiles):
         self.cli.clear_screen()
         self.cli.display_legend()
         self.board_presenter.print_board(tiles, self.rows, self.cols)
-        while (interpreted_input != "exit"):
-            user_input = self.cli.get_input()
-            interpreted_input = self.interpret_input(user_input)
-            tiles = self.make_move(tiles, interpreted_input)
-            self.cli.clear_screen()
-            self.cli.display_legend()
-            self.board_presenter.print_board(tiles, self.rows, self.cols)
-            if tiles == self.create_tile_list():
-                self.cli.display("You win!")
+
+    def take_a_turn(self, tiles):
+        interpreted_input = self.get_interpreted_input()
+        tiles = self.make_move(tiles, interpreted_input)
+        self.display_current_board(tiles)
+        return interpreted_input
+
+    def get_interpreted_input(self):
+        user_input = self.cli.get_input()
+        return self.interpret_input(user_input)
+
+    def is_a_won_game(self, tiles):
+        return tiles == self.create_tile_list()
 
     def interpret_input(self, user_input):
         if user_input == "i":
@@ -51,16 +60,6 @@ class Game(object):
             return "exit"
         else:
             return user_input
-
-    def create_tile_list(self):
-        tiles = []
-        for i in range(self.rows * self.cols):
-            if (i + 1) < 10:
-                tiles.append(" " + str(i + 1))
-            else:
-                tiles.append(str(i + 1))
-        tiles[len(tiles) - 1] = "  "
-        return tiles
 
     def get_blank_position(self, tiles):
         return tiles.index("  ") + 1
@@ -91,7 +90,7 @@ class Game(object):
             return False
 
 
-    def swap_tiles(self, tiles, swap_target): # swap_target is a tile value
+    def swap_tiles(self, tiles, swap_target):
        temp_value_target = tiles.index(swap_target)
        temp_value_blank = tiles.index("  ")
        tiles[temp_value_target] = "  "
@@ -146,12 +145,9 @@ class Game(object):
             return tiles
 
 
-
-
     def shuffle_tiles(self, tiles):
         moves = ["up", "down", "left", "right"]
         for i in range(1, 50*len(tiles)):
-            index = random.randint(0, 3)
-            move = moves[index]
+            move = random.choice(moves)
             self.make_move(tiles, move)
         return tiles

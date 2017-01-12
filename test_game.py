@@ -438,6 +438,3 @@ class TestGame(unittest.TestCase):
                        ["a", "b", "c",
                         "  ", "d", "e",
                         "f", "g", "h"])
-
-
-  
